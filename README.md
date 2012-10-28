@@ -9,7 +9,8 @@ RMPhoneFormat provides a simple to use class for formatting phone numbers in iOS
 This class depends on a copy of an Apple provided private framework file named Default.phoneformat being copied into the app's resource bundle and named PhoneFormats.dat.
 
 The Default.phoneformat file can be located in:
-    /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator<version>.sdk/System/Library/PrivateFrameworks/AppSupport.framework
+    /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/
+        iPhoneSimulator<version>.sdk/System/Library/PrivateFrameworks/AppSupport.framework
 
 where <version> is the version of the iPhone SDK installed. It is recommended that you use the one from 6.0.
 
