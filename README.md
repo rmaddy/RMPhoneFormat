@@ -14,11 +14,27 @@ The Default.phoneformat file can be located in:
 
 where \<version\> is the version of the iPhone SDK installed. It is recommended that you use the one from 6.0.
 
+Add RMPhoneFormat.m and RMPhoneFormat.h to your own project. These files use ARC. If your project is not using ARC then you must add the -fno-objc-arc flag to the RMPhoneFormat.m file. Select your target in Xcode. Select the Build Phases tab. Open the Compile Sources pane. Select RMPhoneFormat.m and press Enter. Add -fno-objc-arc in the popup window so it appears in the Compiler Flags column.
+
 ##Usage
 
 In its simplest form you do the following:
 
     RMPhoneFormat *fmt = [[RMPhoneFormat alloc] init];
+    // Call any number of times
+    NSString *numberString = // the phone number to format
+    NSString *formatedNumber = [fmt format:numberString];
+
+You can also pass in a specific default country code if you don't want to rely on the Region Format setting. Pass in a valid ISO 3166-1 two-letter country code in lowercase:
+
+    RMPhoneFormat *fmt = [[RMPhoneFormat alloc] initWithDefaultCountry:@"uk"];
+    // Call any number of times
+    NSString *numberString = // the phone number to format
+    NSString *formatedNumber = [fmt format:numberString];
+
+You may also use the singleton interface if desired:
+
+    RMPhoneFormat *fmt = [RMPhoneFormat instance];
     // Call any number of times
     NSString *numberString = // the phone number to format
     NSString *formatedNumber = [fmt format:numberString];
