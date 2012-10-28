@@ -2,7 +2,7 @@
 
 RMPhoneFormat provides a simple to use class for formatting phone numbers in iOS apps. The formatting should replicate what you would see in the Contacts app for the same phone number.
 
- The included sample project demonstrates how to use the formatting class to setup a text field that formats itself as the user type in a phone number. While the sample app is for iOS, the RMPhoneFormat class should work as-is under OS X.
+The included sample project demonstrates how to use the formatting class to setup a text field that formats itself as the user types in a phone number. While the sample app is for iOS, the RMPhoneFormat class should work as-is under OS X.
 
 ##Setup
 
@@ -27,11 +27,11 @@ In its simplest form you do the following:
 
 See the comments in RMPhoneFormat.m for additional details.
 
-Please note that the format of the Default.phoneformat file is not documented. There are aspects to this file that are not yet understood. This means that some phone numbers in some countries may not be formatted correctly.
+Please note that the format of the Default.phoneformat file is undocumented. There are aspects to this file that are not yet understood. This means that some phone numbers in some countries may not be formatted correctly.
 
 ##Issues
 
-If you encounter an issue where a phone number is formatted with RMPhoneFormat differently than the Contacts app, pleaselet me know. Be sure to provide the phone number, the output from RMPhoneFormat, the output shown in Contacts, and the Region Format setting from the Settings app.
+If you encounter an issue where a phone number is formatted differently with RMPhoneFormat than the Contacts app, please let me know. Be sure to provide the phone number, the output from RMPhoneFormat, the output shown in Contacts, and the Region Format setting from the Settings app.
 
 ##License
     Copyright (c) 2012, Rick Maddy
