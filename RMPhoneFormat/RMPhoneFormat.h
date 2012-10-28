@@ -1,3 +1,6 @@
+//
+// RMPhoneFormat.h v1.0
+
 // Copyright (c) 2012, Rick Maddy
 // All rights reserved.
 //
@@ -22,27 +25,13 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import "RMAppDelegate.h"
-#import "RMPhoneFormat.h"
-#import "RMViewController.h"
+#import <Foundation/Foundation.h>
 
-@implementation RMAppDelegate
+@interface RMPhoneFormat : NSObject
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
-    self.viewController = [[RMViewController alloc] init];
-    self.window.rootViewController = self.viewController;
-    
-    [self.window makeKeyAndVisible];
-    
+- (NSString *)format:(NSString *)str;
 #ifdef DEBUG
-    // For debugging purposes
-    RMPhoneFormat *format = [[RMPhoneFormat alloc] init];
-    [format dump];
+- (void)dump;
 #endif
-    
-    return YES;
-}
 
 @end

@@ -17,7 +17,8 @@
 		1D6A984B163D96A90005E74D /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D6A984A163D96A90005E74D /* Default@2x.png */; };
 		1D6A984D163D96A90005E74D /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D6A984C163D96A90005E74D /* Default-568h@2x.png */; };
 		1D6A9850163D96A90005E74D /* RMViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6A984F163D96A90005E74D /* RMViewController.m */; };
-		1D6A9853163D96A90005E74D /* RMViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1D6A9851163D96A90005E74D /* RMViewController.xib */; };
+		1D6A985C163D977F0005E74D /* PhoneFormats.dat in Resources */ = {isa = PBXBuildFile; fileRef = 1D6A9859163D977F0005E74D /* PhoneFormats.dat */; };
+		1D6A985D163D977F0005E74D /* RMPhoneFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6A985B163D977F0005E74D /* RMPhoneFormat.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,7 +37,9 @@
 		1D6A984C163D96A90005E74D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		1D6A984E163D96A90005E74D /* RMViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RMViewController.h; sourceTree = "<group>"; };
 		1D6A984F163D96A90005E74D /* RMViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RMViewController.m; sourceTree = "<group>"; };
-		1D6A9852163D96A90005E74D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RMViewController.xib; sourceTree = "<group>"; };
+		1D6A9859163D977F0005E74D /* PhoneFormats.dat */ = {isa = PBXFileReference; lastKnownFileType = file; path = PhoneFormats.dat; sourceTree = "<group>"; };
+		1D6A985A163D977F0005E74D /* RMPhoneFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMPhoneFormat.h; sourceTree = "<group>"; };
+		1D6A985B163D977F0005E74D /* RMPhoneFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMPhoneFormat.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +90,9 @@
 				1D6A9846163D96A90005E74D /* RMAppDelegate.m */,
 				1D6A984E163D96A90005E74D /* RMViewController.h */,
 				1D6A984F163D96A90005E74D /* RMViewController.m */,
-				1D6A9851163D96A90005E74D /* RMViewController.xib */,
+				1D6A985A163D977F0005E74D /* RMPhoneFormat.h */,
+				1D6A985B163D977F0005E74D /* RMPhoneFormat.m */,
+				1D6A9859163D977F0005E74D /* PhoneFormats.dat */,
 				1D6A983D163D96A90005E74D /* Supporting Files */,
 			);
 			path = RMPhoneFormat;
@@ -163,7 +168,7 @@
 				1D6A9849163D96A90005E74D /* Default.png in Resources */,
 				1D6A984B163D96A90005E74D /* Default@2x.png in Resources */,
 				1D6A984D163D96A90005E74D /* Default-568h@2x.png in Resources */,
-				1D6A9853163D96A90005E74D /* RMViewController.xib in Resources */,
+				1D6A985C163D977F0005E74D /* PhoneFormats.dat in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +182,7 @@
 				1D6A9843163D96A90005E74D /* main.m in Sources */,
 				1D6A9847163D96A90005E74D /* RMAppDelegate.m in Sources */,
 				1D6A9850163D96A90005E74D /* RMViewController.m in Sources */,
+				1D6A985D163D977F0005E74D /* RMPhoneFormat.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,14 +195,6 @@
 				1D6A9840163D96A90005E74D /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		1D6A9851163D96A90005E74D /* RMViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				1D6A9852163D96A90005E74D /* en */,
-			);
-			name = RMViewController.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
