@@ -38,7 +38,7 @@
     
 #ifdef DEBUG
     // For debugging purposes
-    RMPhoneFormat *format = [[RMPhoneFormat alloc] init];
+    RMPhoneFormat *format = [RMPhoneFormat instance];
     [format dump];
 #endif
     

@@ -508,15 +508,34 @@ static NSMutableDictionary *flagRules = nil;
     return res;
 }
 
++ (RMPhoneFormat *)instance {
+    static RMPhoneFormat *instance = nil;
+    static dispatch_once_t predicate = 0;
+    
+    dispatch_once(&predicate, ^{ instance = [self new]; });
+    
+    return instance;
+}
+
 - (id)init {
+    self = [self initWithDefaultCountry:nil];
+    
+    return self;
+}
+
+- (id)initWithDefaultCountry:(NSString *)countryCode {
     if ((self = [super init])) {
         _data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"PhoneFormats" ofType:@"dat"]];
         NSAssert(_data, @"The file PhoneFormats.dat is not in the resource bundle. See the README.");
 
-        NSLocale *loc = [NSLocale currentLocale];
-        NSString *code = [loc localeIdentifier];
-        NSDictionary *parts = [NSLocale componentsFromLocaleIdentifier:code];
-        _defaultCountry = [[parts objectForKey:NSLocaleCountryCode] lowercaseString];
+        if (countryCode.length) {
+            _defaultCountry = countryCode;
+        } else {
+            NSLocale *loc = [NSLocale currentLocale];
+            NSString *code = [loc localeIdentifier];
+            NSDictionary *parts = [NSLocale componentsFromLocaleIdentifier:code];
+            _defaultCountry = [[parts objectForKey:NSLocaleCountryCode] lowercaseString];
+        }
         _callingCodeOffsets = [[NSMutableDictionary alloc] initWithCapacity:255];
         _callingCodeCountries = [[NSMutableDictionary alloc] initWithCapacity:255];
         _callingCodeData = [[NSMutableDictionary alloc] initWithCapacity:10];
@@ -649,15 +668,21 @@ static NSMutableDictionary *flagRules = nil;
             
             uint16_t block1Len = [self value16:offset];
             offset += 2;
+#ifdef DEBUG
             uint16_t extra1 = [self value16:offset];
+#endif
             offset += 2;
             uint16_t block2Len = [self value16:offset];
             offset += 2;
+#ifdef DEBUG
             uint16_t extra2 = [self value16:offset];
+#endif
             offset += 2;
             uint16_t setCnt = [self value16:offset];
             offset += 2;
+#ifdef DEBUG
             uint16_t extra3 = [self value16:offset];
+#endif
             offset += 2;
             
 #ifdef DEBUG

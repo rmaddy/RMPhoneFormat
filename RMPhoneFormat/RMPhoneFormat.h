@@ -29,6 +29,11 @@
 
 @interface RMPhoneFormat : NSObject
 
++ (RMPhoneFormat *)instance;
+
+- (id)init;
+- (id)initWithDefaultCountry:(NSString *)countryCode;
+
 - (NSString *)format:(NSString *)str;
 #ifdef DEBUG
 - (void)dump;
