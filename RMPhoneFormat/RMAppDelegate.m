@@ -40,6 +40,14 @@
     // For debugging purposes
     RMPhoneFormat *format = [RMPhoneFormat instance];
     [format dump];
+    
+    NSString *callingCode = [format callingCodeForCountryCode:@"US"];
+    NSLog(@"US = %@", callingCode);
+    callingCode = [format callingCodeForCountryCode:@"AU"];
+    NSLog(@"AU = %@", callingCode);
+    
+    NSSet *countries = [format countriesForCallingCode:@"1"];
+    NSLog(@"countries for +1 are: %@", countries);
 #endif
     
     return YES;

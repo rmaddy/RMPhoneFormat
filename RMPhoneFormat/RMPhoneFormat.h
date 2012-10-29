@@ -35,6 +35,14 @@
 - (id)initWithDefaultCountry:(NSString *)countryCode;
 
 - (NSString *)format:(NSString *)str;
+
+// Calling code for the user's default country based on their Region Format setting
+- (NSString *)defaultCallingCode;
+// countryCode must be 2-letter ISO 3166-1 code. Result does not include a leading +
+- (NSString *)callingCodeForCountryCode:(NSString *)countryCode;
+// callingCode should be 1 to 3 digit calling code. Result is a set of matching, lowercase, 2-letter ISO 3166-1 country codes
+- (NSSet *)countriesForCallingCode:(NSString *)callingCode;
+
 #ifdef DEBUG
 - (void)dump;
 #endif

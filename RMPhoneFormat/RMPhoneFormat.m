@@ -189,13 +189,6 @@
  All other characters used as-is. Includes spaces, dashes, parentheses, and slashes.
  **********************************************************************************************************************/
 
-#ifdef DEBUG
-static NSMutableDictionary *extra1CallingCodes = nil;
-static NSMutableDictionary *extra2CallingCodes = nil;
-static NSMutableDictionary *extra3CallingCodes = nil;
-static NSMutableDictionary *flagRules = nil;
-#endif
-
 @interface PhoneRule : NSObject
 
 @property (nonatomic, assign) int minVal;
@@ -477,6 +470,13 @@ static NSMutableDictionary *flagRules = nil;
 
 @end
 
+static NSCharacterSet *phoneChars = nil;
+#ifdef DEBUG
+static NSMutableDictionary *extra1CallingCodes = nil;
+static NSMutableDictionary *extra2CallingCodes = nil;
+static NSMutableDictionary *extra3CallingCodes = nil;
+static NSMutableDictionary *flagRules = nil;
+#endif
 
 @implementation RMPhoneFormat {
     NSData *_data;
@@ -485,9 +485,12 @@ static NSMutableDictionary *flagRules = nil;
     NSMutableDictionary *_callingCodeOffsets;
     NSMutableDictionary *_callingCodeCountries;
     NSMutableDictionary *_callingCodeData;
+    NSMutableDictionary *_countryCallingCode;
 }
 
 + (void)initialize {
+    phoneChars = [NSCharacterSet characterSetWithCharactersInString:@"0123456789+*#"];
+    
 #ifdef DEBUG
     extra1CallingCodes = [[NSMutableDictionary alloc] init];
     extra2CallingCodes = [[NSMutableDictionary alloc] init];
@@ -496,11 +499,10 @@ static NSMutableDictionary *flagRules = nil;
 #endif
 }
 
-+ (NSString *)strip:(NSString *)str keep:(NSString *)chars {
-    NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:chars];
++ (NSString *)strip:(NSString *)str {
     NSMutableString *res = [NSMutableString stringWithString:str];
     for (int i = [res length] - 1; i >= 0; i--) {
-        if (![cs characterIsMember:[res characterAtIndex:i]]) {
+        if (![phoneChars characterIsMember:[res characterAtIndex:i]]) {
             [res deleteCharactersInRange:NSMakeRange(i, 1)];
         }
     }
@@ -532,18 +534,33 @@ static NSMutableDictionary *flagRules = nil;
             _defaultCountry = countryCode;
         } else {
             NSLocale *loc = [NSLocale currentLocale];
-            NSString *code = [loc localeIdentifier];
-            NSDictionary *parts = [NSLocale componentsFromLocaleIdentifier:code];
-            _defaultCountry = [[parts objectForKey:NSLocaleCountryCode] lowercaseString];
+            _defaultCountry = [[loc objectForKey:NSLocaleCountryCode] lowercaseString];
         }
         _callingCodeOffsets = [[NSMutableDictionary alloc] initWithCapacity:255];
         _callingCodeCountries = [[NSMutableDictionary alloc] initWithCapacity:255];
         _callingCodeData = [[NSMutableDictionary alloc] initWithCapacity:10];
+        _countryCallingCode = [[NSMutableDictionary alloc] initWithCapacity:255];
         
         [self parseDataHeader];
     }
         
     return self;
+}
+
+- (NSString *)defaultCallingCode {
+    return [self callingCodeForCountryCode:_defaultCountry];
+}
+
+- (NSString *)callingCodeForCountryCode:(NSString *)countryCode {
+    return [_countryCallingCode objectForKey:[countryCode lowercaseString]];
+}
+
+- (NSSet *)countriesForCallingCode:(NSString *)callingCode {
+    if ([callingCode hasPrefix:@"+"]) {
+        callingCode = [callingCode substringFromIndex:1];
+    }
+    
+    return [_callingCodeCountries objectForKey:callingCode];
 }
 
 - (CallingCodeInfo *)findCallingCodeInfo:(NSString *)str {
@@ -564,10 +581,10 @@ static NSMutableDictionary *flagRules = nil;
 
 - (NSString *)format:(NSString *)orig {
     // First remove all added punctuation to get just raw phone number characters.
-    NSString *str = [RMPhoneFormat strip:orig keep:@"0123456789+*#"];
+    NSString *str = [RMPhoneFormat strip:orig];
 
     // Phone numbers can be entered by the user in the following formats:
-    // 1) +<international prefix><basic number>
+    // 1) +<international prefix><basic number>303
     // 2) <access code><international prefix><basic number>
     // 3) <trunk prefix><basic number>
     // 4) <basic number>
@@ -865,6 +882,8 @@ static NSMutableDictionary *flagRules = nil;
         if ([country isEqualToString:_defaultCountry]) {
             _defaultCallingCode = callingCode;
         }
+        
+        [_countryCallingCode setObject:callingCode forKey:country];
         
         [_callingCodeOffsets setObject:[NSNumber numberWithLong:offset] forKey:callingCode];
         NSMutableSet *countries = [_callingCodeCountries objectForKey:callingCode];
