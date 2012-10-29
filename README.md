@@ -43,6 +43,7 @@ RMPhoneFormat can also be used to lookup a country's calling code:
 
     RMPhoneFormat *fmt = [RMPhoneFormat instance];
     NSString *callingCode = [fmt callingCodeForCountryCode:@"AU"]; // Australia - returns 61
+    NSString *defaultCallingCode = [fmt defaultCallingCode]; // based on current Region Format (locale)
 
 ##Notes
 
