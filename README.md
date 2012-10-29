@@ -39,6 +39,11 @@ You may also use the singleton interface if desired:
     NSString *numberString = // the phone number to format
     NSString *formatedNumber = [fmt format:numberString];
 
+RMPhoneFormat can also be used to lookup a country's calling code:
+
+    RMPhoneFormat *fmt = [RMPhoneFormat instance];
+    NSString *callingCode = [fmt callingCodeForCountryCode:@"AU"]; // Australia - returns 61
+
 ##Notes
 
 See the comments in RMPhoneFormat.m for additional details.
