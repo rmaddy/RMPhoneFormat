@@ -1,6 +1,6 @@
 #RMPhoneFormat
 
-RMPhoneFormat provides a simple to use class for formatting phone numbers in iOS apps. The formatting should replicate what you would see in the Contacts app for the same phone number.
+RMPhoneFormat provides a simple to use class for formatting and validating phone numbers in iOS apps. The formatting should replicate what you would see in the Contacts app for the same phone number.
 
 The included sample project demonstrates how to use the formatting class to setup a text field that formats itself as the user types in a phone number. While the sample app is for iOS, the RMPhoneFormat class should work as-is under OS X.
 
@@ -23,21 +23,30 @@ In its simplest form you do the following:
     RMPhoneFormat *fmt = [[RMPhoneFormat alloc] init];
     // Call any number of times
     NSString *numberString = // the phone number to format
-    NSString *formatedNumber = [fmt format:numberString];
+    NSString *formattedNumber = [fmt format:numberString];
 
 You can also pass in a specific default country code if you don't want to rely on the Region Format setting. Pass in a valid ISO 3166-1 two-letter country code in lowercase:
 
     RMPhoneFormat *fmt = [[RMPhoneFormat alloc] initWithDefaultCountry:@"uk"];
     // Call any number of times
     NSString *numberString = // the phone number to format
-    NSString *formatedNumber = [fmt format:numberString];
+    NSString *formattedNumber = [fmt format:numberString];
 
 You may also use the singleton interface if desired:
 
     RMPhoneFormat *fmt = [RMPhoneFormat instance];
     // Call any number of times
     NSString *numberString = // the phone number to format
-    NSString *formatedNumber = [fmt format:numberString];
+    NSString *formattedNumber = [fmt format:numberString];
+
+To validate a phone number you can do the following:
+
+    RMPhoneFormat *fmt = [[RMPhoneFormat alloc] init];
+    // Call any number of times
+    NSString *numberString = // the phone number to validate
+    BOOL valid = [fmt isPhoneNumberValid:fmt];
+    
+The phone number to validate can include formatting characters or not. The number will be valid if there are an appropriate set of digits.
 
 RMPhoneFormat can also be used to lookup a country's calling code:
 
