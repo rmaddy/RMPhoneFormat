@@ -336,7 +336,7 @@
         }
 
         // If we get this far it means the supplied number has either a trunk prefix or an international prefix but
-        // not of the rules explictly use that prefix. So now we make one last pass finding a matching rule by totally
+        // none of the rules explictly use that prefix. So now we make one last pass finding a matching rule by totally
         // ignoring the prefix flag.
         if (!prefixRequired) {
             if (intlPrefix != nil) {
@@ -367,6 +367,45 @@
         return nil; // no match found
     } else {
         return nil; // not long enough to compare
+    }
+}
+
+- (BOOL)isValid:(NSString *)str intlPrefix:(NSString *)intlPrefix trunkPrefix:(NSString *)trunkPrefix prefixRequired:(BOOL)prefixRequired {
+    // First check the number's length against this rule set's match length. If the supplied number is the wrong length then
+    // this rule set is ignored.
+    if ([str length] >= self.matchLen) {
+        // Otherwise we make two passes through the rules in the set. The first pass looks for rules that match the
+        // number's prefix and length. It also finds the best rule match based on the prefix flag.
+        NSString *begin = [str substringToIndex:self.matchLen];
+        int val = [begin intValue];
+        for (PhoneRule *rule in self.rules) {
+            // Check the rule's range and length against the start of the number
+            if (val >= rule.minVal && val <= rule.maxVal && [str length] == rule.maxLen) {
+                if (prefixRequired) {
+                    // This pass is trying to find the most restrictive match
+                    // A prefix flag of 0 means the format string does not explicitly use the trunk prefix or
+                    // international prefix. So only use one of these if the number has no trunk or international prefix.
+                    // A prefix flag of 1 means the format string has a reference to the trunk prefix. Only use that
+                    // rule if the number has a trunk prefix.
+                    // A prefix flag of 2 means the format string has a reference to the international prefix. Only use
+                    // that rule if the number has an international prefix.
+                    if (((rule.flag12 & 0x03) == 0 && trunkPrefix == nil && intlPrefix == nil) || (trunkPrefix != nil && (rule.flag12 & 0x01)) || (intlPrefix != nil && (rule.flag12 & 0x02))) {
+                        return YES; // full match
+                    }
+                } else {
+                    // This pass is less restrictive. If this is called it means there was not an exact match based on
+                    // prefix flag and any supplied prefix in the number. So now we can use this rule if there is no
+                    // prefix regardless of the flag12.
+                    if ((trunkPrefix == nil && intlPrefix == nil) || (trunkPrefix != nil && (rule.flag12 & 0x01)) || (intlPrefix != nil && (rule.flag12 & 0x02))) {
+                        return YES; // full match
+                    }
+                }
+            }
+        }
+        
+        return NO; // no match found
+    } else {
+        return NO; // not the correct length
     }
 }
 
@@ -457,6 +496,43 @@
     
     // Nothing worked so just return the original number as-is.
     return orig;
+}
+
+- (BOOL)isValidPhoneNumber:(NSString *)orig {
+    // First see if the number starts with either the country's trunk prefix or international prefix. If so save it
+    // off and remove from the number.
+    NSString *str = orig;
+    NSString *trunkPrefix = nil;
+    NSString *intlPrefix = nil;
+    if ([str hasPrefix:self.callingCode]) {
+        intlPrefix = self.callingCode;
+        str = [str substringFromIndex:[intlPrefix length]];
+    } else {
+        NSString *trunk = [self matchingTrunkCode:str];
+        if (trunk) {
+            trunkPrefix = trunk;
+            str = [str substringFromIndex:[trunkPrefix length]];
+        }
+    }
+    
+    // Scan through all sets find best match with no optional prefixes allowed
+    for (RuleSet *set in self.ruleSets) {
+        BOOL valid = [set isValid:str intlPrefix:intlPrefix trunkPrefix:trunkPrefix prefixRequired:YES];
+        if (valid) {
+            return valid;
+        }
+    }
+    
+    // No exact matches so now allow for optional prefixes
+    for (RuleSet *set in self.ruleSets) {
+        BOOL valid = [set isValid:str intlPrefix:intlPrefix trunkPrefix:trunkPrefix prefixRequired:NO];
+        if (valid) {
+            return valid;
+        }
+    }
+    
+    // The number isn't complete
+    return NO;
 }
 
 - (NSString *)description {
@@ -620,7 +696,7 @@ static NSMutableDictionary *flagRules = nil;
             // Strip off the access code.
             NSString *rest = [str substringFromIndex:[accessCode length]];
             NSString *phone = rest;
-            // Now see if the rest of the number starts with a know international prefix.
+            // Now see if the rest of the number starts with a known international prefix.
             CallingCodeInfo *info2 = [self findCallingCodeInfo:rest];
             if (info2) {
                 // We found the other country. Format the number for that country.
@@ -644,6 +720,74 @@ static NSMutableDictionary *flagRules = nil;
     
     // All else fails - return the orignal entered number.
     //return orig;
+}
+
+- (BOOL)isPhoneNumberValid:(NSString *)phoneNumber {
+    // First remove all added punctuation to get just raw phone number characters.
+    NSString *str = [RMPhoneFormat strip:phoneNumber];
+    
+    // Phone numbers can be entered by the user in the following formats:
+    // 1) +<international prefix><basic number>303
+    // 2) <access code><international prefix><basic number>
+    // 3) <trunk prefix><basic number>
+    // 4) <basic number>
+    //
+    if ([str hasPrefix:@"+"]) {
+        // Handle case 1. Remove the leading '+'.
+        NSString *rest = [str substringFromIndex:1];
+        // Now find the country that matches the number's international prefix
+        CallingCodeInfo *info = [self findCallingCodeInfo:rest];
+        if (info) {
+            // We found a matching country. Use that info to see if the number is complete.
+            BOOL valid = [info isValidPhoneNumber:rest];
+            
+            return valid;
+        } else {
+            // No matching country code
+            return NO;
+        }
+    } else {
+        // Handles cases 2, 3, and 4.
+        // Make sure we have info about the user's current region format.
+        CallingCodeInfo *info = [self callingCodeInfo:_defaultCallingCode];
+        if (info == nil) {
+            // No match for the user's locale. No formatting possible.
+            return NO;
+        }
+        
+        // See if the entered number begins with an access code valid for the user's region format.
+        NSString *accessCode = [info matchingAccessCode:str];
+        if (accessCode) {
+            // We found a matching access code. This means the rest of the number should be for another country,
+            // starting with the other country's international access code.
+            // Strip off the access code.
+            NSString *rest = [str substringFromIndex:[accessCode length]];
+            if (rest.length) {
+                // Now see if the rest of the number starts with a know international prefix.
+                CallingCodeInfo *info2 = [self findCallingCodeInfo:rest];
+                if (info2) {
+                    // We found a matching country. Use that info to see if the number is complete.
+                    BOOL valid = [info2 isValidPhoneNumber:rest];
+                    
+                    return valid;
+                } else {
+                    // No matching country code
+                    return NO;
+                }
+            } else {
+                // There is just an access code so far.
+                return NO;
+            }
+        } else {
+            // No access code so we handle cases 3 and 4 and validate the number using the user's region format.
+            BOOL valid = [info isValidPhoneNumber:str];
+            
+            return valid;
+        }
+    }
+    
+    // All else fails - not a valid phone number.
+    return NO;
 }
 
 - (uint32_t)value32:(NSUInteger)offset {

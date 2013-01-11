@@ -89,6 +89,9 @@
     NSString *txt = [textField.text stringByReplacingCharactersInRange:repRange withString:string];
     // This is the newly formatted version of the phone number
     NSString *phone = [_phoneFormat format:txt];
+    BOOL valid = [_phoneFormat isPhoneNumberValid:phone];
+    
+    textField.textColor = valid ? [UIColor blackColor] : [UIColor redColor];
     
     // If these are the same then just let the normal text changing take place
     if ([phone isEqualToString:txt]) {

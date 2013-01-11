@@ -42,6 +42,8 @@
 - (NSString *)callingCodeForCountryCode:(NSString *)countryCode;
 // callingCode should be 1 to 3 digit calling code. Result is a set of matching, lowercase, 2-letter ISO 3166-1 country codes
 - (NSSet *)countriesForCallingCode:(NSString *)callingCode;
+// Determines if the given phone number is a complete phone number (with or without formatting)
+- (BOOL)isPhoneNumberValid:(NSString *)phoneNumber;
 
 #ifdef DEBUG
 - (void)dump;
