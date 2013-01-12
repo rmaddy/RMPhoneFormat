@@ -200,6 +200,8 @@
 @property (nonatomic, assign) int flag12;
 @property (nonatomic, assign) int flag13;
 @property (nonatomic) NSString *format;
+@property (nonatomic, readonly) BOOL hasIntlPrefix;
+@property (nonatomic, readonly) BOOL hasTrunkPrefix;
 #ifdef DEBUG
 @property (nonatomic) NSSet *countries;
 @property (nonatomic) NSString *callingCode;
@@ -211,6 +213,14 @@
 @end
 
 @implementation PhoneRule
+
+- (BOOL)hasIntlPrefix {
+    return (self.flag12 & 0x02);
+}
+
+- (BOOL)hasTrunkPrefix {
+    return (self.flag12 & 0x01);
+}
 
 - (NSString *)format:(NSString *)str intlPrefix:(NSString *)intlPrefix trunkPrefix:(NSString *)trunkPrefix {
     BOOL hadC = NO;
@@ -295,6 +305,8 @@
 
 @property (nonatomic, assign) int matchLen;
 @property (nonatomic) NSMutableArray *rules;
+@property (nonatomic, assign) BOOL hasRuleWithIntlPrefix;
+@property (nonatomic, assign) BOOL hasRuleWithTrunkPrefix;
 
 - (NSString *)format:(NSString *)str intlPrefix:(NSString *)intlPrefix trunkPrefix:(NSString *)trunkPrefix prefixRequired:(BOOL)prefixRequired;
 
@@ -403,6 +415,35 @@
             }
         }
         
+        // If we get this far it means the supplied number has either a trunk prefix or an international prefix but
+        // none of the rules explictly use that prefix. So now we make one last pass finding a matching rule by totally
+        // ignoring the prefix flag.
+        if (!prefixRequired) {
+            if (intlPrefix != nil && !self.hasRuleWithIntlPrefix) {
+                // Strings with intl prefix should use rule with c in it if possible. If not found above then find
+                // matching rule with no c.
+                for (PhoneRule *rule in self.rules) {
+                    if (val >= rule.minVal && val <= rule.maxVal && [str length] == rule.maxLen) {
+                        if (trunkPrefix == nil || (rule.flag12 & 0x01)) {
+                            // We found a matching rule.
+                            return YES;
+                        }
+                    }
+                }
+            } else if (trunkPrefix != nil && !self.hasRuleWithTrunkPrefix) {
+                // Strings with trunk prefix should use rule with n in it if possible. If not found above then find
+                // matching rule with no n.
+                for (PhoneRule *rule in self.rules) {
+                    if (val >= rule.minVal && val <= rule.maxVal && [str length] == rule.maxLen) {
+                        if (intlPrefix == nil || (rule.flag12 & 0x02)) {
+                            // We found a matching rule.
+                            return YES;
+                        }
+                    }
+                }
+            }
+        }
+
         return NO; // no match found
     } else {
         return NO; // not the correct length
@@ -924,6 +965,13 @@ static NSMutableDictionary *flagRules = nil;
                     }
                     
                     [rules addObject:rule];
+                    
+                    if (rule.hasIntlPrefix) {
+                        ruleSet.hasRuleWithIntlPrefix = YES;
+                    }
+                    if (rule.hasTrunkPrefix) {
+                        ruleSet.hasRuleWithTrunkPrefix = YES;
+                    }
 #ifdef DEBUG
                     rule.countries = res.countries;
                     rule.callingCode = res.callingCode;
