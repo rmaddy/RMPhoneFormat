@@ -14,7 +14,7 @@ The Default.phoneformat file can be located in:
 
 where \<version\> is the version of the iPhone SDK installed. It is recommended that you use the one from 6.0.
 
-Add RMPhoneFormat.m and RMPhoneFormat.h to your own project. These files use ARC. If your project is not using ARC then you must add the -fobjc-arc flag to the RMPhoneFormat.m file. Select your target in Xcode. Select the Build Phases tab. Open the Compile Sources pane. Select RMPhoneFormat.m and press Enter. Add -fno-objc-arc in the popup window so it appears in the Compiler Flags column.
+Add RMPhoneFormat.m and RMPhoneFormat.h to your own project. These files use ARC. If your project is not using ARC then you must add the -fobjc-arc flag to the RMPhoneFormat.m file. Select your target in Xcode. Select the Build Phases tab. Open the Compile Sources pane. Select RMPhoneFormat.m and press Enter. Add -fobjc-arc in the popup window so it appears in the Compiler Flags column.
 
 ##Usage
 
