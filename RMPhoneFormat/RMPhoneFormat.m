@@ -752,10 +752,24 @@ static NSMutableDictionary *flagRules = nil;
                 return [NSString stringWithFormat:@"%@ %@", accessCode, phone];
             }
         } else {
-            // No access code so we handle cases 3 and 4 and format the number using the user's region format.
-            NSString *phone = [info format:str];
-            
-            return phone;
+            NSString *trunkCode = [info matchingTrunkCode:str];
+            if (trunkCode) {
+                NSString *phone = [str substringFromIndex:[trunkCode length]];
+                
+                if ([phone length] == 0) {
+                    // There is just an access code so far.
+                    return trunkCode;
+                } else {
+                    // We have an access code and a possibly formatted number. Combine with a space between.
+                    return [NSString stringWithFormat:@"%@ %@", trunkCode, [info format:phone]];
+                }
+            }
+            else {
+                // No access code so we handle cases 3 and 4 and format the number using the user's region format.
+                NSString *phone = [info format:str];
+                
+                return phone;
+            }
         }
     }
     
