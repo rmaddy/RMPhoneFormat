@@ -1,21 +1,13 @@
-#
-# Be sure to run `pod spec lint RMPhoneFormat.podspec' to ensure this is a
-# valid spec.
-#
-# Remove all comments before submitting the spec. Optional attributes are commented.
-#
-# For details see: https://github.com/CocoaPods/CocoaPods/wiki/The-podspec-format
-#
 Pod::Spec.new do |s|
   s.name         = "RMPhoneFormat"
   s.version      = "0.0.1"
-  s.summary      = "RMPhoneFormat provides a simple to use class for formatting and validating phone numbers in iOS apps"
+  s.summary      = "RMPhoneFormat provides a simple to use class for formatting and validating phone numbers in iOS apps."
   s.description  = <<-DESC
                     RMPhoneFormat provides a simple to use class for formatting and validating phone numbers in iOS apps. The formatting should replicate what you would see in the Contacts app for the same phone number.
 
 The included sample project demonstrates how to use the formatting class to setup a text field that formats itself as the user types in a phone number. While the sample app is for iOS, the RMPhoneFormat class should work as-is under OS X.
                    DESC
-  s.homepage     = "https://github.com/rromanchuk/RMPhoneFormat.git"
+  s.homepage     = "https://github.com/rmaddy/RMPhoneFormat.git"
 
   s.license      = {
     :type => :BSD,
@@ -47,9 +39,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   }
 
   s.author       = { "Rick Maddy" => "rmaddy@maddyhome.com" }
-  s.source       = { :git => "https://github.com/rmaddy/RMPhoneFormat.git", :commit => '23236e0925aa215bd83b794f7660ad7d4d79ecc6' }
+  s.source       = { :git => "https://github.com/rmaddy/RMPhoneFormat.git", :commit => '23236e0925aa215bd83b794f7660ad7d4d79ecc6' } # This needs to be updated with commit that includes the .dat file
   s.platform     = :ios
-  s.source_files = 'RMPhoneFormat.{h,m}'
-  s.resource  = "PhoneFormats.dat"
+  s.source_files = 'RMPhoneFormat/RMPhoneFormat.{h,m}'
+  s.resource  = "RMPhoneFormat/PhoneFormats.dat"
   s.requires_arc = true
 end
