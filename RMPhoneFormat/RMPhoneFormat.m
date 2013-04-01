@@ -648,7 +648,7 @@ static NSMutableDictionary *flagRules = nil;
         NSAssert(_data, @"The file PhoneFormats.dat is not in the resource bundle. See the README.");
 
         if (countryCode.length) {
-            _defaultCountry = countryCode;
+            _defaultCountry = [countryCode lowercaseString];
         } else {
             NSLocale *loc = [NSLocale currentLocale];
             _defaultCountry = [[loc objectForKey:NSLocaleCountryCode] lowercaseString];
