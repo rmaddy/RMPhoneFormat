@@ -34,6 +34,7 @@
     RMPhoneFormat *_phoneFormat;
     NSMutableCharacterSet *_phoneChars;
     UITextField *_textField;
+    UILabel *_absoluteNumberLabel;
 }
 
 - (id)init {
@@ -92,6 +93,22 @@
     BOOL valid = [_phoneFormat isPhoneNumberValid:phone];
     
     textField.textColor = valid ? [UIColor blackColor] : [UIColor redColor];
+
+    if (valid) {
+        NSString *absoluteNumber = [_phoneFormat absoluteInternationalFormat:txt];
+
+        if (absoluteNumber) {
+            _absoluteNumberLabel.text = absoluteNumber;
+        } else {
+            _absoluteNumberLabel.text = @"(Valid regional number, but no given area code)";
+        }
+        _absoluteNumberLabel.textColor = [UIColor blackColor];
+    } else {
+        textField.textColor = [UIColor redColor];
+
+        _absoluteNumberLabel.text = @"(Not a valid number)";
+        _absoluteNumberLabel.textColor = [UIColor darkGrayColor];
+    }
     
     // If these are the same then just let the normal text changing take place
     if ([phone isEqualToString:txt]) {
@@ -141,12 +158,15 @@
     
     self.view.backgroundColor = [UIColor lightGrayColor];
     
-    UIView *bg = [[UIView alloc] initWithFrame:CGRectMake(20, 40, self.view.frame.size.width - 40, 44)];
+    CGRect bgFrame = CGRectMake(20, 40, self.view.frame.size.width - 40, 44);
+    UIView *bg = [[UIView alloc] initWithFrame:bgFrame];
     bg.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     bg.backgroundColor = [UIColor whiteColor];
     bg.layer.cornerRadius = 10;
 
-    UITextField *tf = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, bg.frame.size.width - 20, 24)];
+    // The text field where you type the number.
+    CGRect tfFrame = CGRectMake(10, 10, bg.frame.size.width - 20, 24);
+    UITextField *tf = [[UITextField alloc] initWithFrame:tfFrame];
     tf.keyboardType = UIKeyboardTypePhonePad;
     tf.backgroundColor = [UIColor whiteColor];
     tf.clearButtonMode = UITextFieldViewModeWhileEditing;
@@ -159,6 +179,16 @@
     [self.view addSubview:bg];
     
     _textField = tf;
+    
+    // Label below the text field showing the absolute international number.
+    CGRect absoluteFrame = CGRectMake(bgFrame.origin.x,
+                                      bgFrame.origin.y + bgFrame.size.height + 10.0,
+                                      bgFrame.size.width,
+                                      16.0);
+    _absoluteNumberLabel = [[UILabel alloc] initWithFrame:absoluteFrame];
+    _absoluteNumberLabel.font = [UIFont systemFontOfSize:13.0];
+    _absoluteNumberLabel.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:_absoluteNumberLabel];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
