@@ -763,6 +763,55 @@ static NSMutableDictionary *flagRules = nil;
     //return orig;
 }
 
+- (NSString *)absoluteInternationalFormat:(NSString *)orig {
+    // Don't deal with invalid numbers.
+    if (![self isPhoneNumberValid:orig]) {
+        return nil;
+    }
+
+    NSString *str = [RMPhoneFormat strip:orig];
+
+    if ([str hasPrefix:@"+"]) {
+        // This is already an absolute number -- return the stripped version.
+        return str;
+    }
+
+    CallingCodeInfo *info = [self callingCodeInfo:_defaultCallingCode];
+    if (info == nil) {
+        // No way to determine absolute international format for this number.
+        return nil;
+    }
+
+    NSString *absoluteInternational;
+
+    // See if the entered number begins with an access code valid for the user's region format.
+    NSString *accessCode = [info matchingAccessCode:str];
+    if (accessCode) {
+        // Strip off the access code -- the rest should start with a country code followed by
+        // the regional number.
+        NSString *rest = [str substringFromIndex:[accessCode length]];
+        absoluteInternational = [@"+" stringByAppendingString:rest];
+    } else {
+        // No international prefix.
+        NSString *trunkCode = [info matchingTrunkCode:str];
+        if (trunkCode.length) {
+            str = [str substringFromIndex:trunkCode.length];
+        }
+
+        // Attempt to create a full-fledged +xx number from this number to see if it's valid.
+        absoluteInternational = [NSString stringWithFormat:@"+%@%@", info.callingCode, str];
+    }
+
+    if (![self isPhoneNumberValid:absoluteInternational]) {
+        // This might not be valid eg. in the case of regional numbers, like
+        // 555-5555 in the US — not direct-dialable from outside the country.
+        return nil;
+    }
+
+    return absoluteInternational;
+}
+
+
 - (BOOL)isPhoneNumberValid:(NSString *)phoneNumber {
     // First remove all added punctuation to get just raw phone number characters.
     NSString *str = [RMPhoneFormat strip:phoneNumber];

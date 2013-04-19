@@ -35,6 +35,7 @@
 - (id)initWithDefaultCountry:(NSString *)countryCode;
 
 - (NSString *)format:(NSString *)str;
+- (NSString *)absoluteInternationalFormat:(NSString *)str;
 
 // Calling code for the user's default country based on their Region Format setting
 - (NSString *)defaultCallingCode;
