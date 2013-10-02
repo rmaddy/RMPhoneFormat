@@ -699,6 +699,9 @@ static NSMutableDictionary *flagRules = nil;
 - (NSString *)format:(NSString *)orig {
     // First remove all added punctuation to get just raw phone number characters.
     NSString *str = [RMPhoneFormat strip:orig];
+    // no numbers, possibly text
+    if (str.length == 0)
+        return orig;
 
     // Phone numbers can be entered by the user in the following formats:
     // 1) +<international prefix><basic number>303
