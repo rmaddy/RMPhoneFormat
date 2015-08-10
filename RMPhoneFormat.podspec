@@ -9,6 +9,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '6.0'
   s.ios.deployment_target = "6.0"
   s.osx.deployment_target = "10.8"
+  s.watchos.deployment_target = "2.0"
   s.source_files = 'RMPhoneFormat/RMPhoneFormat.{h,m}'
   s.requires_arc = true
 end
